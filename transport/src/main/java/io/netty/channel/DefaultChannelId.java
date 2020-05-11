@@ -159,6 +159,9 @@ public final class DefaultChannelId implements ChannelId {
     private transient String longValue;
 
     private DefaultChannelId() {
+        /**
+         * todo 唯一id算法
+         */
         data = new byte[MACHINE_ID.length + PROCESS_ID_LEN + SEQUENCE_LEN + TIMESTAMP_LEN + RANDOM_LEN];
         int i = 0;
 

@@ -201,6 +201,14 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         synchronized (this) {
             checkMultiplicity(handler);
 
+            /**
+             * 创建一个 AbstractChannelHandlerContext 对象，
+             * 这里说一下，ChannelHandlerContext 对象是 ChannelHandler 和 ChannelPipeline 之间的关联，
+             * 每当有 ChannelHandler 添加到 Pipeline 中时，
+             * 都会创建 Context。Context 的主要功能是管理他所关联的 Handler
+             * 和同一个 Pipeline 中的其他 Handler 之间的交互。
+             *
+             */
             newCtx = newContext(group, filterName(name, handler), handler);
 
             addLast0(newCtx);
@@ -216,6 +224,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
             EventExecutor executor = newCtx.executor();
             if (!executor.inEventLoop()) {
+                /**
+                 * 如果executor不在EventLoop中,异步执行
+                 */
                 callHandlerAddedInEventLoop(newCtx, executor);
                 return this;
             }
@@ -594,6 +605,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     private static void checkMultiplicity(ChannelHandler handler) {
         if (handler instanceof ChannelHandlerAdapter) {
+            /**
+             * 查该 handler 是否符合标准，如果没有 Sharable 注解且已经被使用过了，就抛出异常。
+             */
             ChannelHandlerAdapter h = (ChannelHandlerAdapter) handler;
             if (!h.isSharable() && h.added) {
                 throw new ChannelPipelineException(

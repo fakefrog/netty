@@ -37,6 +37,11 @@ public interface EventExecutorChooserFactory {
         /**
          * Returns the new {@link EventExecutor} to use.
          */
+        /**
+         * 如果数组是偶数，则使用位运算获取下一个EventLoop（单例线程池）（效率高）。
+         * 如果是奇数，使用取余（效率低）。
+         * @return
+         */
         EventExecutor next();
     }
 }

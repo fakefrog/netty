@@ -50,15 +50,32 @@ public final class EchoServer {
 
         // Configure the server.
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        /**
+         * bossGroup 用于接受 Tcp 请求，他会将请求交给 workerGroup ，
+         * workerGroup 会获取到真正的连接，然后和连接进行通信，比如读写解码编码等操作。
+         */
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         final EchoServerHandler serverHandler = new EchoServerHandler();
         try {
             ServerBootstrap b = new ServerBootstrap();
+            /**
+             * ServerBootstrap 对象，他是一个引导类，用于启动服务器和引导整个程序的初始化。
+             */
             b.group(bossGroup, workerGroup)
              .channel(NioServerSocketChannel.class)
+                    /**
+                     * 引导类将通过这个 Class 对象反射创建 Channel。
+                     */
              .option(ChannelOption.SO_BACKLOG, 100)
              .handler(new LoggingHandler(LogLevel.INFO))
-             .childHandler(new ChannelInitializer<SocketChannel>() {
+                    /**
+                     * 再添加了一个服务器专属的日志处理器 handler。
+                     */
+             .childHandler(new ChannelInitializer<SocketChannel>()
+                     /**
+                      * 再添加一个 SocketChannel（不是 ServerSocketChannel）的 handler。
+                      */
+             {
                  @Override
                  public void initChannel(SocketChannel ch) throws Exception {
                      ChannelPipeline p = ch.pipeline();
@@ -67,6 +84,11 @@ public final class EchoServer {
                      }
                      //p.addLast(new LoggingHandler(LogLevel.INFO));
                      p.addLast(serverHandler);
+                     /**
+                      * 这是一个普通的处理器类，用于处理客户端发送来的消息，
+                      * 在我们这里，我们简单的解析出客户端传过来的内容，然后打印，
+                      * 最后发送字符串给客户端。
+                      */
                  }
              });
 

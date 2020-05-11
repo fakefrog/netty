@@ -72,6 +72,7 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
      * Create a new instance
      */
     public NioServerSocketChannel() {
+        //windowsServerSocketChannel来了个反射创建
         this(newSocket(DEFAULT_SELECTOR_PROVIDER));
     }
 
